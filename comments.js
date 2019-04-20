@@ -18,11 +18,9 @@
           button.textContent = 'Hide comments';
         } else {
           comments = loadComments(button.value, commentSection);
-          if (!comments) {
-            let error = document.createElement('P');
-            error.innerText = 'Error loading comments';
-            commentSection.appendChild(error);
-          }
+          comments = true;
+          commentSection.hidden = false;
+          button.textContent = 'Hide comments';
         }
       } else {
         commentSection.hidden = true;
@@ -34,28 +32,27 @@
   });
 
   function loadComments (postID, commSection) {
-    let baseurl = 'https//jsonplaceholder.typecode.com/comments';
+    let baseurl = 'https://jsonplaceholder.typicode.com/comments';
     const $ = window.$;
+    let data;
     $.ajax({
       type: 'GET',
-      url: baseurl,
-      data: { postId: postID },
+      url: baseurl + '?postId=' + postID,
       dataType: 'json',
-      success: function (resp) {
-        for (let item in resp.data) {
-          generateComment(item, commSection);
+      data: data,
+      cache: false,
+      success: function (data) {
+        for (let i = 0; i < data.length; i++) {
+          generateComment(data[i], commSection);
+          console.log('generated comment success');
         }
-        return true;
-      },
-      error: function (req) {
-        return false;
       }
     });
   }
   function generateComment (commData, commSection) {
     let commBody = document.createElement('P');
     let addr = document.createElement('address');
-    commBody.innerText = commData.body.replace(/\n/g, '<br />');
+    commBody.innerHTML = commData.body.replace(/\n/g, '<br />');
     let link = document.createElement('a');
     link.href = 'mailto:' + commData.email;
     link.innerText = commData.name;
